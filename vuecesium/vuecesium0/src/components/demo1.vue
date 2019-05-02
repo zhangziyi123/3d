@@ -13,8 +13,33 @@ export default {
   mounted () {
     this.$nextTick(() => {
       debugger
-      this.viewer = new Cesium.Viewer('cesiumContainer')
-      let wyoming = this.viewer.entities.add({
+      this.viewer = new Cesium.Viewer('cesiumContainer', {
+        animation: false, // 是否显示动画控件(左下方那个)
+        baseLayerPicker: true, // 是否显示图层选择控件
+        geocoder: true, // 是否显示地名查找控件
+        timeline: true, // 是否显示时间线控件
+        sceneModePicker: true, // 是否显示投影方式控件
+        navigationHelpButton: false, // 是否显示帮助信息控件
+        infoBox: true, // 是否显示点击要素之后显示的信息
+        imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+          url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=1ebef01c272359809b59d1ef1641d3dd',
+          layer: 'vec',
+          style: 'default',
+          format: 'tiles',
+          tileMatrixSetID: 'w',
+          show: false
+        })
+      })
+
+      this.viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+        url: 'http://t0.tianditu.com/cva_w/wmts?tk=1ebef01c272359809b59d1ef1641d3dd',
+        layer: 'cva',
+        style: 'default',
+        format: 'tiles',
+        tileMatrixSetID: 'w',
+        show: false
+      }))
+      /* let wyoming = this.viewer.entities.add({
         name: 'Wyoming',
         polygon: {
           hierarchy: Cesium.Cartesian3.fromDegreesArray([
@@ -37,7 +62,7 @@ export default {
           outlineColor: Cesium.Color.BLACK
         }
       })
-      this.viewer.zoomTo(wyoming)
+      this.viewer.zoomTo(wyoming) */
     })
   }
 }

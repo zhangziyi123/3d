@@ -1,5 +1,5 @@
 <template>
-  <div id="cesiumContainer" class="tdmap"></div>
+<div id="cesiumContainer" class="tdmap"></div>
 </template>
 
 <script>
@@ -39,7 +39,7 @@ export default {
         tileMatrixSetID: 'w',
         show: false
       }))
-      /* let wyoming = this.viewer.entities.add({
+      let wyoming = this.viewer.entities.add({
         name: 'Wyoming',
         polygon: {
           hierarchy: Cesium.Cartesian3.fromDegreesArray([
@@ -56,22 +56,59 @@ export default {
             -111.047063, 44.476286,
             -111.05254, 45.002073
           ]),
-          height: 0,
+          height: 200000, // 设置物体离地面高度
+          extrudedHeight: 250000, // 会出现一个高度从200000-250000，高度为50000的长方体
           material: Cesium.Color.RED.withAlpha(0.5),
           outLine: true,
           outlineColor: Cesium.Color.BLACK
         }
       })
-      this.viewer.zoomTo(wyoming) */
+      wyoming.description = `<img width="50%" style="float:left; margin: 0 1em 1em 0;" src="http://cesiumjs.org/tutorials/Visualizing-Spatial-Data/images/Flag_of_Wyoming.svg"/>
+       <p>Wyoming is a state in the mountain region of the Western United States.</p>
+       <p>
+      Wyoming is the 10th most extensive, but the least populous
+      and the second least densely populated of the 50 United
+      States. The western two thirds of the state is covered mostly
+      with the mountain ranges and rangelands in the foothills of
+      the eastern Rocky Mountains, while the eastern third of the
+      state is high elevation prairie known as the High Plains.
+      Cheyenne is the capital and the most populous city in Wyoming,
+      with a population estimate of 62,448 in 2013.\
+    </p>
+    <p>Source: <a style='color: WHITE' target="_blank" href="http://en.wikipedia.org/wiki/Wyoming">Wikpedia</a></p>`
+
+      // var heading = Cesium.Math.toRadians(90) // 相机会从东方向下倾斜30°角去看怀俄明的多边形
+      // var pitch = Cesium.Math.toRadians(-30)
+      // this.viewer.zoomTo(wyoming, new Cesium.HeadingPitchRange(heading, pitch))
+      // this.viewer.flyTo(wyoming) // zoomTo 和flyTo 都是异步函数 缩放完成后需要制定的代码放到 then函数里 if (result) {.....
+      var citizensBankPark = this.viewer.entities.add({
+        name: 'Citizens Bank Park',
+        position: Cesium.Cartesian3.fromDegrees(-75.166493, 39.9060534),
+        point: {
+          pixelSize: 5,
+          color: Cesium.Color.RED,
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2
+        },
+        label: {
+          text: 'Citizens Bank Park',
+          font: '14pt monospace',
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          outlineWidth: 2,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, -9)
+        }
+      })
+      this.viewer.flyTo(citizensBankPark)
     })
   }
 }
 </script>
 
 <style>
-  .tdmap{
-    height: 100vh;
-    width: 100%;
-    background-color:deepskyblue;
-  }
+.tdmap{
+  height:100vh;
+  width:100%;
+  background-color:deepskyblue;
+}
 </style>

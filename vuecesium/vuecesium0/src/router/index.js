@@ -5,6 +5,7 @@ import HelloWorld from '@/components/HelloWorld'
 Vue.use(Router)
 
 const demo1 = () => import('../components/demo1.vue')
+const Terrain = () => import('../components/specialEffects/Terrain.vue')
 
 export default new Router({
   routes: [
@@ -17,6 +18,11 @@ export default new Router({
       path: '/demo',
       name: 'demo-1',
       component: demo1
+    },
+    {
+      path: '/terrain',
+      name: 'terrain',
+      component: Terrain
     }
   ]
 })

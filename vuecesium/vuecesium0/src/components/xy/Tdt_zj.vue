@@ -14,7 +14,6 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      debugger
       this.viewer = new Cesium.Viewer('cesiumContainer', {
         selectionIndicator: false,
         animation: false, // 是否显示动画控件
@@ -28,10 +27,10 @@ export default {
         // 天地图影像服务（经纬度）
         imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
           url: URL_CONFIG.TDT_VEC_C,
-          layer: 'img',
+          layer: 'vec',
           style: 'default',
           format: 'tiles',
-          tileMatrixSetID: 'w',
+          tileMatrixSetID: 'c',
           subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
           tilingScheme: new Cesium.GeographicTilingScheme(),
           tileMatrixLabels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],

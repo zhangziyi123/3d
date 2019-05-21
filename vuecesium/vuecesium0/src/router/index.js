@@ -8,6 +8,7 @@ const demo1 = () => import('../components/demo1.vue')
 const Terrain = () => import('../components/specialEffects/Terrain.vue')
 const tdtZJ = () => import('../components/xy/Tdt_zj.vue')
 const XYPicker = () => import('../components/xy/XYPicker.vue')
+const Mapbox3 = () => import('../components/mapbox/3mapbox.vue')
 
 export default new Router({
   routes: [
@@ -35,6 +36,11 @@ export default new Router({
       path: '/terrain',
       name: 'terrain',
       component: Terrain
+    },
+    {
+      path: '/mapbox',
+      name: 'mapbox-3',
+      component: Mapbox3
     }
   ]
 })

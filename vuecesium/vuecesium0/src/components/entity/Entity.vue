@@ -17,6 +17,7 @@ export default {
   data () {
     return {
       viewer: null,
+      scene: null,
       modelPath: 'http://localhost/cesiummodels/',
       entities: [
         {
@@ -40,27 +41,36 @@ export default {
   methods: {
     initEvent () {
       let _this = this
-      let scene = this.viewer.scene
-      let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas)
+      this.scene = this.viewer.scene
+      let handler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas)
       handler.setInputAction(function (event) {
         let earthPosition = _this.viewer.camera.pickEllipsoid(event.position, _this.viewer.scene.globe.ellipsoid)
         if (Cesium.defined(earthPosition)) {
           console.log(earthPosition)
           // createPoint(earthPosition); //在点击位置添加一个点
+          if (_this.model) {
+            _this.changeModelPosition(earthPosition, _this.model)
+          }
         }
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
     },
+    changeModelPosition (position, model) {
+      // 更改坐标与方位
+      let hpRoll = new Cesium.HeadingPitchRoll()
+      let fixedFrameTransforms = Cesium.Transforms.localFrameToFixedFrameGenerator('north', 'west')
+      Cesium.Transforms.headingPitchRollToFixedFrame(position, hpRoll, Cesium.Ellipsoid.WGS84, fixedFrameTransforms, model.modelMatrix)
+    },
     createEntityHandle (entityOption) {
-      debugger
-      let entity = this.viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(-75.62898254394531, 40.02804946899414, 0),
-        model: {
-          uri: this.modelPath + 'CesiumAir/Cesium_Air.gltf',
-          scale: 200
-        }
-      })
-      this.viewer.trackedEntity = entity
-      this.viewer.flyTo(entity)
+      let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees(-75.62898254394531, 40.02804946899414, 0))
+      let modelTimestamp = new Date().getTime()
+      this.model = this.scene.primitives.add(Cesium.Model.fromGltf({
+        id: modelTimestamp,
+        url: this.modelPath + 'CesiumAir/Cesium_Air.gltf',
+        modelMatrix: modelMatrix,
+        minimumPixelSize: 512,
+        maximumScale: 200000
+      }))
+      this.viewer.flyTo(this.model)
     }
   },
   mounted () {

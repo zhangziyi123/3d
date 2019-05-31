@@ -3,7 +3,7 @@
   <div class="gis-entity-right">
     <ul>
       <li v-for="(item, index) in entities" :key="index + 1" @click.stop="createEntityHandle(item)">
-        <a>{{ item.alias }}</a>
+        <img :title="item.alias" class="gis-entity-img" :src="modelPath + item.image">
       </li>
     </ul>
   </div>
@@ -21,19 +21,22 @@ export default {
       modelPath: 'http://localhost/cesiummodels/',
       entities: [
         {
-          name: 'test1',
-          alias: '实体1',
-          image: ''
+          name: 'CesiumAir',
+          alias: '飞机',
+          image: 'CesiumAir/airplan.png',
+          path: 'CesiumAir/Cesium_Air.gltf'
         },
         {
-          name: 'test2',
-          alias: '实体2',
-          image: ''
+          name: 'CesiumMan',
+          alias: '人',
+          image: 'CesiumMan/Cesium_Man.png',
+          path: 'CesiumMan/Cesium_Man.gltf'
         },
         {
-          name: 'test3',
-          alias: '实体3',
-          image: ''
+          name: 'CesiumMilkTruck',
+          alias: '牛奶卡车',
+          image: 'CesiumMilkTruck/CesiumMilkTruck2.png',
+          path: 'CesiumMilkTruck/CesiumMilkTruck.gltf'
         }
       ]
     }
@@ -63,14 +66,21 @@ export default {
     createEntityHandle (entityOption) {
       let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees(-75.62898254394531, 40.02804946899414, 0))
       let modelTimestamp = new Date().getTime()
-      this.model = this.scene.primitives.add(Cesium.Model.fromGltf({
-        id: modelTimestamp,
-        url: this.modelPath + 'CesiumAir/Cesium_Air.gltf',
-        modelMatrix: modelMatrix,
-        minimumPixelSize: 512,
-        maximumScale: 200000
-      }))
-      this.viewer.flyTo(this.model)
+      debugger
+      if (entityOption.path) {
+        this.model = this.scene.primitives.add(Cesium.Model.fromGltf({
+          id: modelTimestamp,
+          url: this.modelPath + entityOption.path,
+          modelMatrix: modelMatrix,
+          minimumPixelSize: 512,
+          maximumScale: 200000
+        }))
+        let point = Cesium.Cartesian3.fromDegrees(-75.62898254394531, 40.02804946899414, 1000)
+        this.viewer.camera.setView({
+          destination: point
+        })
+        // this.viewer.flyTo(point)
+      }
     }
   },
   mounted () {
@@ -103,7 +113,13 @@ export default {
   list-style:none;
 }
 .gis-entity-right ul li{
+  position:relative;
   height:100px;
   cursor:pointer;
+  padding: 10px;
+}
+.gis-entity-img{
+  width: 180px;
+  height: 100%;
 }
 </style>

@@ -13,6 +13,7 @@
 
 <script>
 import Cesium from 'cesium/Cesium'
+
 export default {
   data () {
     return {
@@ -38,7 +39,9 @@ export default {
           image: 'CesiumMilkTruck/CesiumMilkTruck2.png',
           path: 'CesiumMilkTruck/CesiumMilkTruck.gltf'
         }
-      ]
+      ],
+      currentModel: null,
+      createEntityState: false
     }
   },
   methods: {
@@ -48,14 +51,30 @@ export default {
       let handler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas)
       handler.setInputAction(function (event) {
         let earthPosition = _this.viewer.camera.pickEllipsoid(event.position, _this.viewer.scene.globe.ellipsoid)
-        if (Cesium.defined(earthPosition)) {
+        if (Cesium.defined(earthPosition) && _this.currentModel) {
           console.log(earthPosition)
           // createPoint(earthPosition); //在点击位置添加一个点
-          if (_this.model) {
-            _this.changeModelPosition(earthPosition, _this.model)
-          }
+          _this.changeModelPosition(earthPosition, _this.currentModel)
+          _this.currentModel = null
         }
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+
+      // 获得当前鼠标在模型上触碰位置的名字
+      let mouseMoveHandle = new Cesium.ScreenSpaceEventHandler(this.scene.canvas)
+      mouseMoveHandle.setInputAction(function (event) {
+        // 当鼠标移动时获取移动的末位置
+        let pick = _this.scene.pick(event.endPosition)
+        // 简单来说就是这个点上有东西，那就打log
+        let earthPosition = _this.viewer.camera.pickEllipsoid(event.endPosition, _this.viewer.scene.globe.ellipsoid)
+        if (Cesium.defined(earthPosition)) {
+          if (_this.currentModel) {
+            _this.changeModelPosition(earthPosition, _this.currentModel)
+          }
+        }
+        if (Cesium.defined(pick) && Cesium.defined(pick.node) && Cesium.defined(pick.mesh)) {
+          console.log('node: ' + pick.node.name + '. mesh: ' + pick.mesh.name)
+        }
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
     },
     changeModelPosition (position, model) {
       // 更改坐标与方位
@@ -66,9 +85,8 @@ export default {
     createEntityHandle (entityOption) {
       let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees(-75.62898254394531, 40.02804946899414, 0))
       let modelTimestamp = new Date().getTime()
-      debugger
       if (entityOption.path) {
-        this.model = this.scene.primitives.add(Cesium.Model.fromGltf({
+        this.currentModel = this.scene.primitives.add(Cesium.Model.fromGltf({
           id: modelTimestamp,
           url: this.modelPath + entityOption.path,
           modelMatrix: modelMatrix,
@@ -116,10 +134,10 @@ export default {
   position:relative;
   height:100px;
   cursor:pointer;
-  padding: 10px;
+  padding:10px;
 }
 .gis-entity-img{
-  width: 180px;
-  height: 100%;
+  width:180px;
+  height:100%;
 }
 </style>

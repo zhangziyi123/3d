@@ -10,7 +10,7 @@ const tdtZJ = () => import('../components/xy/Tdt_zj.vue')
 const XYPicker = () => import('../components/xy/XYPicker.vue')
 const Mapbox3 = () => import('../components/mapbox/3mapbox.vue')
 const Entity = () => import('../components/entity/Entity.vue')
-
+const Geometry = () => import('../components/geometry/Geometry.vue')
 export default new Router({
   routes: [
     {
@@ -47,6 +47,11 @@ export default new Router({
       path: '/entity',
       name: 'entity',
       component: Entity
+    },
+    {
+      path: '/geometry',
+      name: 'geometry',
+      component: Geometry
     }
   ]
 })

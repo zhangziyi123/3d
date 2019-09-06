@@ -96,7 +96,7 @@ export default {
           text: 'Citizens Bank Park',
           font: '14pt monospace',
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          outlineWidth: 2,
+          // outlineWidth: 2,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
           pixelOffset: new Cesium.Cartesian2(0, -9)
         }

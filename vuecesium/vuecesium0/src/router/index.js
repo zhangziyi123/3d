@@ -11,7 +11,15 @@ const XYPicker = () => import('../components/xy/XYPicker.vue')
 const Mapbox3 = () => import('../components/mapbox/3mapbox.vue')
 const Entity = () => import('../components/entity/Entity.vue')
 const Geometry = () => import('../components/geometry/Geometry.vue')
+
+// threejs
+const ThreeJsPage = () => import('../components/threejs/ThreePage') // threejs首页
+const Demo1 = () => import('../components/threejs/base/demo1') // first demo
+const Demo2 = () => import('../components/threejs/base/demo2') // second demo
+const GLTFLoadPage = () => import('../components/threejs/modelLoad/GLTFModel') // 加载gltf三维模型
 export default new Router({
+  history: true,
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -52,6 +60,28 @@ export default new Router({
       path: '/geometry',
       name: 'geometry',
       component: Geometry
+    },
+    {
+      name: 'three',
+      path: '/three',
+      component: ThreeJsPage,
+      children: [
+        {
+          name: 'demo1',
+          path: 'demo1',
+          component: Demo1
+        },
+        {
+          name: 'demo2',
+          path: 'demo2',
+          component: Demo2
+        },
+        {
+          name: 'gltf',
+          path: 'gltf',
+          component: GLTFLoadPage
+        }
+      ]
     }
   ]
 })

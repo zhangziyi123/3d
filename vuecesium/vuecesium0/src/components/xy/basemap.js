@@ -20,6 +20,7 @@ let TDTURL_CONFIG = {
   // 在线天地图影像中文标记服务(经纬度)
   TDT_CIA_C: `http://{s}.tianditu.gov.cn/cia_c/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1ebef01c272359809b59d1ef1641d3dd`,
   // 在线天地图矢量中文标记服务(经纬度)
-  TDT_CVA_C: `http://{s}.tianditu.gov.cn/cva_c/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1ebef01c272359809b59d1ef1641d3dd`
+  TDT_CVA_C: `http://{s}.tianditu.gov.cn/cva_c/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1ebef01c272359809b59d1ef1641d3dd`,
+  TDT_IMG_CC: `http://{s}.tianditu.com/img_c/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1ebef01c272359809b59d1ef1641d3dd`
 }
 export default TDTURL_CONFIG

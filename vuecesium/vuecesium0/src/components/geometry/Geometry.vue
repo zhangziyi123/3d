@@ -5,17 +5,24 @@
       <li v-for="(item, index) in toolbar" :key="index + 1" :title="item.alias" @click.stop="toolHandle(item)"><i :class="item.icon"></i></li>
     </ul>
   </div>
+  <div class="geometry-edit-panel">
+    <geo-edit-panel v-if="selectGeometry" :width="400" :height="500" :entity="selectGeometry" @extrudedHeightHandle="extrudedHeightHandle" @changeColor="changeColor"></geo-edit-panel>
+  </div>
 </div>
 </template>
 
 <script>
 // 参考：https://www.jianshu.com/p/416d432cd83b
 import Cesium from 'cesium/Cesium'
-
+import GeoEditPanel from './GeoEditPanel'
 export default {
+  components: {
+    'geo-edit-panel': GeoEditPanel
+  },
   data () {
     return {
       viewer: null,
+      selectGeometry: null,
       toolbar: [
         {
           name: 'drawPoint',
@@ -39,18 +46,26 @@ export default {
     }
   },
   methods: {
+    extrudedHeightHandle (val) {
+      debugger
+      this.selectGeometry.polygon.extrudedHeight = parseInt(val)
+    },
+    changeColor (r, g, b) {
+      let color = new Cesium.Color(r, g, b, 0.8)
+      this.selectGeometry.polygon.material = color
+    },
     drawPoint () {
       let _this = this
       // 坐标存储
       let positions = []
-
+      let pointEntity = null
       let handler = new Cesium.ScreenSpaceEventHandler(_this.viewer.scene.canvas)
 
       // 单击鼠标左键画点
       handler.setInputAction(function (movement) {
         let cartesian = _this.viewer.scene.camera.pickEllipsoid(movement.position, _this.viewer.scene.globe.ellipsoid)
         positions.push(cartesian)
-        _this.viewer.entities.add({
+        pointEntity = _this.viewer.entities.add({
           position: cartesian,
           point: {
             color: Cesium.Color.RED,
@@ -63,13 +78,13 @@ export default {
       // 单击鼠标右键结束画点
       handler.setInputAction(function (movement) {
         handler.destroy()
-        _this.drawEndHandle(positions)
+        _this.drawEndHandle(positions, pointEntity)
         // callback(positions)
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
     },
     // 画线
     drawLineString (callback) {
-      var _this = this
+      let _this = this
       let PolyLinePrimitive = (function () {
         function _ (positions) {
           this.options = {
@@ -85,8 +100,8 @@ export default {
         }
 
         _.prototype._init = function () {
-          var _self = this
-          var _update = function () {
+          let _self = this
+          let _update = function () {
             return _self.positions
           }
           // 实时更新polyline.positions
@@ -96,12 +111,12 @@ export default {
         return _
       })()
 
-      var handler = new Cesium.ScreenSpaceEventHandler(_this.viewer.scene.canvas)
-      var positions = []
-      var poly = null
+      let handler = new Cesium.ScreenSpaceEventHandler(_this.viewer.scene.canvas)
+      let positions = []
+      let poly = null
       // 鼠标左键单击画点
       handler.setInputAction(function (movement) {
-        var cartesian = _this.viewer.scene.camera.pickEllipsoid(movement.position, _this.viewer.scene.globe.ellipsoid)
+        let cartesian = _this.viewer.scene.camera.pickEllipsoid(movement.position, _this.viewer.scene.globe.ellipsoid)
         if (positions.length === 0) {
           positions.push(cartesian.clone())
         }
@@ -109,7 +124,7 @@ export default {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
       // 鼠标移动
       handler.setInputAction(function (movement) {
-        var cartesian = _this.viewer.scene.camera.pickEllipsoid(movement.endPosition, _this.viewer.scene.globe.ellipsoid)
+        let cartesian = _this.viewer.scene.camera.pickEllipsoid(movement.endPosition, _this.viewer.scene.globe.ellipsoid)
         if (positions.length >= 2) {
           if (!Cesium.defined(poly)) {
             poly = new PolyLinePrimitive(positions)
@@ -125,10 +140,73 @@ export default {
       // 单击鼠标右键结束画线
       handler.setInputAction(function (movement) {
         handler.destroy()
-        _this.drawEndHandle(positions)
+        _this.drawEndHandle(positions, poly)
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
     },
-    drawEndHandle (positions) {
+
+    // 画面
+    drawPolygon () {
+      let _this = this
+      let PolygonPrimitive = (function () {
+        function _ (positions) {
+          this.options = {
+            name: '多边形',
+            polygon: {
+              hierarchy: [], // 多边形层级
+              perPositionHeight: true,
+              material: Cesium.Color.RED.withAlpha(0.8)
+            }
+          }
+          this.hierarchy = positions
+          this._init()
+        }
+
+        _.prototype._init = function () {
+          let _self = this // ？？ 这里this指向？应该是PolygonPrimitive
+          let _update = function () {
+            return _self.hierarchy
+          }
+          // 实时更新polygon.hierarchy
+          this.options.polygon.hierarchy = new Cesium.CallbackProperty(_update, false)
+          _this.selectGeometry = _this.viewer.entities.add(this.options)
+        }
+        return _
+      })()
+
+      let handler = new Cesium.ScreenSpaceEventHandler(_this.viewer.scene.canvas)
+      let positions = []
+      let poly = null
+
+      // 鼠标单击画点
+      handler.setInputAction(function (movement) {
+        let cartesian = _this.viewer.scene.camera.pickEllipsoid(movement.position, _this.viewer.scene.globe.ellipsoid)
+        if (positions.length === 0) {
+          positions.push(cartesian.clone())
+        }
+        positions.push(cartesian)
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+      // 鼠标移动
+      handler.setInputAction(function (movement) {
+        let cartesian = _this.viewer.scene.camera.pickEllipsoid(movement.endPosition, _this.viewer.scene.globe.ellipsoid)
+        if (positions.length >= 2) {
+          if (!Cesium.defined(poly)) {
+            poly = new PolygonPrimitive(positions)
+          } else {
+            if (cartesian !== undefined) {
+              positions.pop() // js数组方法，删除并返回数组的最后一个元素
+              cartesian.y += (1 + Math.random())
+              positions.push(cartesian)
+            }
+          }
+        }
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+      // 鼠标右键单击结束绘制
+      handler.setInputAction(function (movement) {
+        handler.destroy()
+        _this.drawEndHandle(positions, poly)
+      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
+    },
+    drawEndHandle (positions, entity) {
       debugger
       let wgs84Positions = []
       for (let i = 0; i < positions.length; i++) {
@@ -142,11 +220,11 @@ export default {
     },
     // 笛卡尔坐标系转WGS84坐标系
     Cartesian3_to_WGS84: function (point) {
-      var cartesian33 = new Cesium.Cartesian3(point.x, point.y, point.z)
-      var cartographic = Cesium.Cartographic.fromCartesian(cartesian33)
-      var lat = Cesium.Math.toDegrees(cartographic.latitude)
-      var lng = Cesium.Math.toDegrees(cartographic.longitude)
-      var alt = cartographic.height
+      let cartesian33 = new Cesium.Cartesian3(point.x, point.y, point.z)
+      let cartographic = Cesium.Cartographic.fromCartesian(cartesian33)
+      let lat = Cesium.Math.toDegrees(cartographic.latitude)
+      let lng = Cesium.Math.toDegrees(cartographic.longitude)
+      let alt = cartographic.height
       return { lat: lat, lng: lng, alt: alt }
     },
     drawFactory (type) {

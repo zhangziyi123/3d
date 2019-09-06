@@ -84,13 +84,28 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
+      },
+      {
+        test: require.resolve('three/examples/js/controls/OrbitControls'),
+        use: 'imports-loader?THREE=three'
+      },
+      {
+        test: require.resolve('three/examples/js/controls/OrbitControls'),
+        use: 'exports-loader?THREE.OrbitControls'
+      },
+      {
+        test: require.resolve('three/examples/js/loaders/GLTFLoader'),
+        use: 'imports-loader?THREE=three'
+      },
+      {
+        test: require.resolve('three/examples/js/loaders/GLTFLoader'),
+        use: 'exports-loader?THREE.GLTFLoader'
       }
     ],
     // 解决：Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
     unknownContextCritical: false
   },
-  plugins: [
-  ],
+  plugins: [],
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
     // source contains it (although only uses it if it's native).

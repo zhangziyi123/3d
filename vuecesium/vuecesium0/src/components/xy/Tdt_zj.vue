@@ -34,8 +34,8 @@ export default {
           subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
           tilingScheme: new Cesium.GeographicTilingScheme(),
           tileMatrixLabels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
-          maximumLevel: 18,
-          show: false
+          // minimumLevel: 6,
+          maximumLevel: 18
         })
       })
       // 设置初始位置
@@ -53,9 +53,10 @@ export default {
         subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
         tilingScheme: new Cesium.GeographicTilingScheme(),
         tileMatrixLabels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
-        maximumLevel: 18,
-        show: false
+        minimumLevel: 1,
+        maximumLevel: 18
       })
+      debugger
       var layers = this.viewer.imageryLayers
       layers.addImageryProvider(tdtCva)
     })
